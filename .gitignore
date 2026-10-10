@@ -1,0 +1,13 @@
+node_modules/
+
+# python3 build.py writes the bundled sim here
+build/
+
+# Playwright and audio-preview output
+screenshots/
+audio_previews/
+
+__pycache__/
+*.py[cod]
+.DS_Store
+*.log

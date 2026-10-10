@@ -1,0 +1,21 @@
+const { chromium } = require('playwright-core');
+const path = require('path');
+const URL = 'file://' + path.resolve(__dirname, '../index.html');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+(async () => {
+  const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome' });
+  const page = await (await browser.newContext({ viewport: { width: 1280, height: 720 } })).newPage();
+  const errs = []; page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); }); page.on('pageerror', e => errs.push(String(e)));
+  await page.addInitScript(() => { window.__neonNoAutoQ = true; });
+  await page.goto(URL); await sleep(1200);
+  await page.screenshot({ path: '/tmp/s_title.png' });
+  const lv = +(process.argv[2] || 1) - 1;
+  await page.evaluate(lv => window.__blaster.start(lv, ['volt', 'blaze', 'frost', 'spark', 'aegis']), lv);
+  await sleep(600);
+  await page.evaluate(() => window.__blaster.hold({ r: 1 })); await sleep(1500);
+  await page.evaluate(() => window.__blaster.hold({ r: 1, j: 1, f: 1 })); await sleep(700);
+  await page.screenshot({ path: '/tmp/s_play.png' });
+  console.log(await page.evaluate(() => { const s = window.__blaster.sim; return { x: s.p.x, y: s.p.y, hover: s.p.hover, fps: 0 }; }));
+  console.log('errors', errs);
+  await browser.close();
+})();
